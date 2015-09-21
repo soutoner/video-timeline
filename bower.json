@@ -1,0 +1,35 @@
+{
+  "name": "video-timeline",
+  "description": "Popcorn Maker-like video editor",
+  "main": [
+    "js/editor.js",
+    "sass/editor.scss"
+  ],
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "popcorn-js",
+    "editor",
+    "html5"
+  ],
+  "authors": [
+    "Adrian Gonzalez <adrigonle@gmail.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/soutoner/video-timeline.git"
+  },
+  "license": "MIT",
+  "ignore": [
+    "bower-components",
+    "node-modules"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "jquery-ui": "~1.11.4",
+    "popcorn-js": "~1.5.11"
+  }
+}
