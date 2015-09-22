@@ -40,6 +40,8 @@
       drag: (event,ui) ->
         # Also move the indicator (with a little margin)
         $('.line-indicator').css('left', ui.position.left + 3)
+        # And the filled bar
+        $('.filled-bar').width(ui.position.left)
     );
 ) jQuery
 
