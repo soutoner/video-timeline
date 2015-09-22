@@ -9,7 +9,6 @@
   <!-- JS Scripts -->
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
   <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
-  <script src="bower_components/popcorn-js/popcorn.js"></script>
   <script src="assets/js/editor.js"></script>
 
   <title>Video editor</title>
@@ -18,20 +17,19 @@
   <div class="body-wrapper">
     <div class="video-wrapper">
       <div class="video-container">
-        <div id="video"></div>
+        <div id="video"><!-- HTML5 video goes here --></div>
       </div>
     </div>
     <div class="tray-wrapper">
       <div class="time-bar-wrapper">
-        <div class="time-bar"></div>
+        <div class="full-time-bar">
+          <div class="filled-bar"></div>
+        </div>
+        <div class="radio-indicator"></div>
+        <div class="line-indicator"></div>
       </div>
       <div class="tracks-wrapper">Tracks</div>
     </div>
   </div>
-
-  <script>
-
-  </script>
-
 </body>
 </html>

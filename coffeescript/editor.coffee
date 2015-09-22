@@ -1,6 +1,8 @@
 (($) ->
   # Document ready
   $ ->
+
+    # Helper resize function (maintaining aspect ratio)
     jQuery.fn.resizeHeightMaintainRatio = (newHeight) ->
       aspectRatio = $(this).data('aspectRatio')
       if aspectRatio == undefined
@@ -9,27 +11,35 @@
       $(this).height(newHeight)
       $(this).width(parseInt(newHeight * aspectRatio))
 
-    # Managing editor tray resize
+    # Set line indicator length
+    $('.line-indicator').height($('.tray-wrapper').height())
+
+    # Managing editor tray resize (really is the video wrapper what is resizable)
     $('.video-wrapper').resizable(
       containment: 'parent',
       handles: 's',
       resize: (event, ui) ->
-        $('.tray-wrapper').height($('.body-wrapper').height()-ui.size.height)
-        # We have to mantain margins
-        verticalMargins = parseFloat($('.video-container').css('top'))+parseFloat($('.video-container').css('bottom'))
-        $('.video-container').resizeHeightMaintainRatio(ui.size.height-verticalMargins)
+        # Resize tray
+        $('.tray-wrapper').height($('.body-wrapper').height() - ui.size.height)
+        # Resize line tracks indicator
+        $('.line-indicator').height($('.tray-wrapper').height())
+        # We have to maintain margins
+        verticalMargins = parseFloat($('.video-container').css('top')) + parseFloat($('.video-container').css('bottom'))
+        $('.video-container').resizeHeightMaintainRatio(ui.size.height - verticalMargins)
     )
 
-    # Managing window resize
+    # Managing tray on window resize
     $(window).resize( ->
-      $('.tray-wrapper').height($('.body-wrapper').height()-$('.video-wrapper').height())
+      $('.tray-wrapper').height($('.body-wrapper').height() - $('.video-wrapper').height())
     )
+
+    # Radio indicator of the time-bar
+    $('.radio-indicator').draggable(
+      axis: 'x',
+      containment: 'parent',
+      drag: (event,ui) ->
+        # Also move the indicator (with a little margin)
+        $('.line-indicator').css('left', ui.position.left + 3)
+    );
 ) jQuery
 
-#   var pop;
-#
-#    document.addEventListener("DOMContentLoaded", function () {
-#      var wrapper = Popcorn.HTMLYouTubeVideoElement('#video');
-#    wrapper.src = 'https://www.youtube.com/watch?v=As_cvwAMYi4';
-#
-#      pop = Popcorn(wrapper);    });
