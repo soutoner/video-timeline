@@ -1,7 +1,6 @@
 (($) ->
   # Document ready
   $ ->
-
     # Helper resize function (maintaining aspect ratio)
     jQuery.fn.resizeHeightMaintainRatio = (newHeight) ->
       aspectRatio = $(this).data('aspectRatio')
@@ -28,12 +27,15 @@
         $('.video-container').resizeHeightMaintainRatio(ui.size.height - verticalMargins)
     )
 
-    # Managing tray on window resize
+    # Managing elements on window resize
     $(window).resize( ->
+      # Resize tray
       $('.tray-wrapper').height($('.body-wrapper').height() - $('.video-wrapper').height())
+      # Resize line tracks indicator
+      $('.line-indicator').height($('.tray-wrapper').height())
     )
 
-    # Radio indicator of the time-bar
+    # Time lines indicator on draggable
     $('.radio-indicator').draggable(
       axis: 'x',
       containment: 'parent',
