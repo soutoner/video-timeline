@@ -39,7 +39,7 @@
         # And the filled bar
         $('.filled-bar').width(ui.position.left)
       , stop: (event, ui) ->
-        # Set video progress when movement is stoped
+        # Set video progress when movement is stopped
         setCurrentTimeVideo((ui.position.left + radioIndicatorBorder) / $('.full-time-bar').width())
     )
     # Set current time when you click on time bar
@@ -114,7 +114,7 @@
 
     wrapper = Popcorn.HTMLYouTubeVideoElement('#video')
 
-    wrapper.src = "https://www.youtube.com/watch?v=TLLG_3Aiq80"
+    wrapper.src = "https://www.youtube.com/watch?v=z0MFQrEb2ow"
 
     pop = Popcorn( wrapper )
 
