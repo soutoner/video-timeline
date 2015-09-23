@@ -32,7 +32,7 @@
     # Time lines indicator on draggable
     $('.radio-indicator').draggable(
       axis: 'x',
-      containment: 'parent',
+      containment: '.full-time-bar',
       drag: (event,ui) ->
         # Also move the indicator (with a little margin)
         $('.line-indicator').css('left', ui.position.left + radioIndicatorBorder)
@@ -40,7 +40,7 @@
         $('.filled-bar').width(ui.position.left)
       , stop: (event, ui) ->
         # Set video progress when movement is stoped
-        setCurrentTimeVideo(pop.duration())
+        setCurrentTimeVideo((ui.position.left + radioIndicatorBorder) / $('.full-time-bar').width())
     )
     # Set current time when you click on time bar
     $('.full-time-bar').click( (e) ->
