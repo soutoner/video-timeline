@@ -1,38 +1,32 @@
 (($) ->
   # Document ready
   $ ->
-    # Helper resize function (maintaining aspect ratio)
-    jQuery.fn.resizeHeightMaintainRatio = (newHeight) ->
-      aspectRatio = $(this).data('aspectRatio')
-      if aspectRatio == undefined
-        aspectRatio = $(this).width() / $(this).height()
-        $(this).data('aspectRatio', aspectRatio)
-      $(this).height(newHeight)
-      $(this).width(parseInt(newHeight * aspectRatio))
 
-    # Set line indicator length
+    ## PARAMETERS
+    ## -------------------------------------------------
+    radioIndicatorBorder = 3
+
+    ## EDITOR MANAGEMENT
+    ## -------------------------------------------------
+
+    # Set line indicator length initially
     $('.line-indicator').height($('.tray-wrapper').height())
 
     # Managing editor tray resize (really is the video wrapper what is resizable)
     $('.video-wrapper').resizable(
       containment: 'parent',
       handles: 's',
-      resize: (event, ui) ->
-        # Resize tray
-        $('.tray-wrapper').height($('.body-wrapper').height() - ui.size.height)
-        # Resize line tracks indicator
-        $('.line-indicator').height($('.tray-wrapper').height())
-        # We have to maintain margins
-        verticalMargins = parseFloat($('.video-container').css('top')) + parseFloat($('.video-container').css('bottom'))
-        $('.video-container').resizeHeightMaintainRatio(ui.size.height - verticalMargins)
+      resize: (event, ui) -> resizeTray($('.body-wrapper').height() - ui.size.height)
     )
 
     # Managing elements on window resize
     $(window).resize( ->
-      # Resize tray
-      $('.tray-wrapper').height($('.body-wrapper').height() - $('.video-wrapper').height())
-      # Resize line tracks indicator
-      $('.line-indicator').height($('.tray-wrapper').height())
+      # Resize video wrapper
+      if trayIsMinimized()
+        resizeVideo($('.body-wrapper').height() - $('.time-bar-icons-wrapper').height())
+      else
+        resizeVideo($('.body-wrapper').height() - $('.tray-wrapper').height())
+        resizeTrayContent()
     )
 
     # Time lines indicator on draggable
@@ -41,9 +35,110 @@
       containment: 'parent',
       drag: (event,ui) ->
         # Also move the indicator (with a little margin)
-        $('.line-indicator').css('left', ui.position.left + 3)
+        $('.line-indicator').css('left', ui.position.left + radioIndicatorBorder)
         # And the filled bar
         $('.filled-bar').width(ui.position.left)
-    );
+    )
+
+    # Minimize tray icon
+    ogTrayWrapperHeight = $('.tray-wrapper').height()
+    $('.minimize-wrapper button').click( ->
+      if trayIsMinimized()
+        resizeVideo($('.body-wrapper').height() - ogTrayWrapperHeight, true)
+      else
+        ogTrayWrapperHeight = $('.tray-wrapper').height()
+        resizeVideo($('.body-wrapper').height() - $('.time-bar-icons-wrapper').height(), true)
+
+      $('.line-indicator').slideToggle()
+      $('.tracks-wrapper').slideToggle()
+    )
+
+
+    ## AUXILIAR FUNCTIONS
+    # Resize tray and all the elements along
+    resizeTray = (newHeight) ->
+      if !trayIsMinimized()
+        # Resize tray wrapper
+        $('.tray-wrapper').height(newHeight)
+        # Resize tray contentr
+        resizeTrayContent()
+
+    # Resize tray content to fit the wrapper
+    resizeTrayContent = ->
+      # Resize line indicator
+      $('.line-indicator').height($('.tray-wrapper').height())
+
+    # Resize video wrapper
+    resizeVideo = (newHeight, animated = false) ->
+      if animated
+        $('.video-wrapper').animate(height: newHeight)
+      else
+        $('.video-wrapper').height(newHeight)
+
+    ## BOOLEANS
+    # Returns if tray is minimized (i.e. tracks wrapper is not visible)
+    trayIsMinimized = ->
+      $('.tracks-wrapper').is(':hidden')
+
+    ## VIDEO MANAGEMENT
+    ## -------------------------------------------------
+
+    wrapper = Popcorn.HTMLYouTubeVideoElement('#video')
+
+    wrapper.src = "https://www.youtube.com/watch?v=TLLG_3Aiq80"
+
+    pop = Popcorn( wrapper )
+
+    pop.load()
+
+    # on durationchange set duration of the video
+    wrapper.addEventListener('durationchange', (e) ->
+      $('.status-container span.total-time').text(pop.duration().toHHMMSS())
+    )
+
+    # on timeupdate change set current time of the video and progress
+    wrapper.addEventListener('timeupdate', (e) ->
+      $('.status-container span.current-time').text(pop.currentTime().toHHMMSS())
+      console.log((pop.currentTime()/pop.duration())*100)
+      setProgressBar((pop.currentTime()/pop.duration())*100)
+    )
+
+    # Play/pause button
+    $('.status-container button').click( ->
+      if pop.paused()
+        $(this).text('Pause')
+        pop.play()
+      else
+        $(this).text('Play')
+        pop.pause()
+    )
+
+    ## AUXILIARY FUNCTIONS
+    # Set progress bar at a certain point (percentage)
+    setProgressBar = (progress = 50) ->
+      # Move filled bar
+      $('.filled-bar').width(progress + '%')
+      # Radio correction because its not centered with filled bar
+      radioCorrection = (radioIndicatorBorder*100)/$('.full-time-bar').width()
+      # Move radio pointer
+      $('.radio-indicator').css('left', progress - radioCorrection + '%')
+      # Move line indicator
+      $('.line-indicator').css('left',  progress + '%')
+
+    ## HELPERS
+    # Seconds to HH:MM:SS (YouTube) format
+    Number.prototype.toHHMMSS = ->
+      secs = Math.ceil(this)
+      hours = Math.floor(secs / 3600)
+      minutes = Math.floor((secs - (hours * 3600)) / 60)
+      seconds = secs - (hours * 3600) - (minutes * 60)
+
+      (if hours != 0 then hours + ':' else '') +
+        (if hours > 0 then minutes.twoDigits() else minutes)  + ':' +
+        seconds.twoDigits()
+
+    Number.prototype.twoDigits = ->
+      if this > 9 then '' + this else '0' + this
+
 ) jQuery
 
